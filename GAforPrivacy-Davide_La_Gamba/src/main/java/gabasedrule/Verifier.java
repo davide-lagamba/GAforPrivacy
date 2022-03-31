@@ -25,6 +25,51 @@ public class Verifier {
     private static HashMap<String, Integer> mapFound = new HashMap<>();
 
 
+    public static ArrayList<Connection> filterProbe(ArrayList<Connection> l){
+        ArrayList<Connection> l2= new ArrayList<>();
+        for(Connection c: l){
+            if((c.getLabel().equalsIgnoreCase("normal")) || (c.getLabel().equalsIgnoreCase("ipsweep")) || (c.getLabel().equalsIgnoreCase("nmap")) ||
+                    (c.getLabel().equalsIgnoreCase("portsweep")) || (c.getLabel().equalsIgnoreCase("satan"))){
+                l2.add(c);
+            }
+        }
+        return l2;
+    }
+
+    public static ArrayList<Connection> filterDos(ArrayList<Connection> l){
+        ArrayList<Connection> l2= new ArrayList<>();
+        for(Connection c: l){
+            if((c.getLabel().equalsIgnoreCase("normal")) || (c.getLabel().equalsIgnoreCase("back")) || (c.getLabel().equalsIgnoreCase("land")) || (c.getLabel().equalsIgnoreCase("neptune")) ||
+                    (c.getLabel().equalsIgnoreCase("pod")) || (c.getLabel().equalsIgnoreCase("smurf")) || (c.getLabel().equalsIgnoreCase("teardrop"))){
+                l2.add(c);
+            }
+        }
+        return l2;
+    }
+
+    public static ArrayList<Connection> filterU2r(ArrayList<Connection> l){
+        ArrayList<Connection> l2= new ArrayList<>();
+        for(Connection c: l){
+            if((c.getLabel().equalsIgnoreCase("normal")) || (c.getLabel().equalsIgnoreCase("buffer_overflow")) || (c.getLabel().equalsIgnoreCase("loadmodule")) || (c.getLabel().equalsIgnoreCase("perl")) ||
+                    (c.getLabel().equalsIgnoreCase("rootkit"))){
+                l2.add(c);
+            }
+        }
+        return l2;
+    }
+
+    public static ArrayList<Connection> filterR2l(ArrayList<Connection> l){
+        ArrayList<Connection> l2= new ArrayList<>();
+        for(Connection c: l){
+            if((c.getLabel().equalsIgnoreCase("normal")) || (c.getLabel().equalsIgnoreCase("ftp_write")) || (c.getLabel().equalsIgnoreCase("guess_passwd")) || (c.getLabel().equalsIgnoreCase("imap")) ||
+                    (c.getLabel().equalsIgnoreCase("multihop")) || (c.getLabel().equalsIgnoreCase("phf")) || (c.getLabel().equalsIgnoreCase("spy")) ||
+                    (c.getLabel().equalsIgnoreCase("warezclient")) || (c.getLabel().equalsIgnoreCase("warezmaster"))){
+                l2.add(c);
+            }
+        }
+        return l2;
+    }
+
     public static HashMap<String, Double> findAttackPercentages(HashMap<String, Integer> allAttacks, HashMap<String, Integer> foundAttacks){
         Double dosTotal=0.0,  u2rTotal=0.0, r2lTotal=0.0, probeTotal=0.0;
         Double dos=0.0,  u2r=0.0, r2l=0.0, probe=0.0;
@@ -123,13 +168,13 @@ public class Verifier {
 
     }
 
-    static ArrayList<Double> performanceRuleSet(ArrayList<int[]> ruleSet){
+    static ArrayList<Double> performanceRuleSet(ArrayList<int[]> ruleSet, ArrayList<Connection> list){
         Double TP=0.0, TN=0.0, FP=0.0, FN=0.0;
         mapFound.clear();
         int n=0;
         int tmp=0;
         String label="";
-        for(Connection c: l){
+        for(Connection c: list){
             label=c.getLabel();
             for(int[] g: ruleSet){
                 if(compareConnectionWithRule(c, g)) {
@@ -249,7 +294,7 @@ public class Verifier {
         bestRules.add(bestRuleMorePortsweep);
         int[] bestRuleMoreNeptune = new int[]{15464,1,6,5,457,9114,0,0,0,0,37,33,13,72,76,0,83,56,1,1,1,2,2,2,1,2,2,1,1,2,1,1}; //Probe features
         bestRules.add(bestRuleMoreNeptune);
-        ArrayList<Double> results= performanceRuleSet(bestRules);
+        ArrayList<Double> results= performanceRuleSet(bestRules, (ArrayList<Connection>) l);
         System.out.println("Attacchi trovati: "+mapFound.toString());
         HashMap<String, Integer> mapMissingAttacks = findMissingAttacks(mapAttacks, mapFound);
         System.out.println("Attacchi mancanti: "+mapMissingAttacks.toString());
@@ -274,6 +319,122 @@ public class Verifier {
         System.out.println("Percentuali tipi di attacchi trovati:\n"+attacksPercentage.toString());
         System.out.println("Numero di regole concatenate: "+bestRules.size());
         ArrayList<Connection> missingAttacksList= (ArrayList<Connection>) missingAttacksList(l, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
+
+        //Probe
+        ArrayList<Connection> lProbe=filterProbe((ArrayList<Connection>) l);
+        results= performanceRuleSet(bestRules, lProbe);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati Probe: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksProbe = findMissingAttacks(mapAttacks, mapFound);
+        System.out.println("Attacchi mancanti Probe: "+mapMissingAttacks.toString());
+        TP= results.get(0);
+        TN= results.get(1);
+        FP= results.get(2);
+        FN= results.get(3);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi Probe:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
+
+        //Dos
+        ArrayList<Connection> lDos=filterDos((ArrayList<Connection>) l);
+        results= performanceRuleSet(bestRules, lDos);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati Dos: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksDos = findMissingAttacks(mapAttacks, mapFound);
+        System.out.println("Attacchi mancanti Dos: "+mapMissingAttacks.toString());
+        TP= results.get(0);
+        TN= results.get(1);
+        FP= results.get(2);
+        FN= results.get(3);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi Dos:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
+
+        //U2R
+        ArrayList<Connection> lU2r=filterU2r((ArrayList<Connection>) l);
+        results= performanceRuleSet(bestRules, lU2r);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati U2r: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksU2r = findMissingAttacks(mapAttacks, mapFound);
+        System.out.println("Attacchi mancanti U2r: "+mapMissingAttacks.toString());
+        TP= results.get(0);
+        TN= results.get(1);
+        FP= results.get(2);
+        FN= results.get(3);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi U2r:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
+
+        //R2L
+        ArrayList<Connection> lR2l=filterR2l((ArrayList<Connection>) l);
+        results= performanceRuleSet(bestRules, lR2l);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati R2l: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksR2l = findMissingAttacks(mapAttacks, mapFound);
+        System.out.println("Attacchi mancanti R2l: "+mapMissingAttacks.toString());
+        TP= results.get(0);
+        TN= results.get(1);
+        FP= results.get(2);
+        FN= results.get(3);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi R2l:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
     }
 }

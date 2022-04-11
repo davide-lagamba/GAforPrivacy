@@ -25,6 +25,24 @@ public class Verifier {
     private static HashMap<String, Integer> mapFound = new HashMap<>();
 
 
+    public static void plotStatistics(ArrayList<int[]> rules){
+        ArrayList<int[]> rulesTmp;
+        for(int i=1; i<= rules.size();i++){
+            rulesTmp= new ArrayList<int[]>(rules.subList(0, i));
+        ArrayList<Double> results= performanceRuleSet(rulesTmp, (ArrayList<Connection>) l);
+        Double TP= results.get(0);
+        Double TN= results.get(1);
+        Double FP= results.get(2);
+        Double FN= results.get(3);
+        Double fmeasure= (TP)/(TP+(FP+FN)/2);
+        Double detectionRate= (TP)/(FN+TP);
+        Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        Double precision = (TP)/(TP+FP);
+        Double specificity=TN/(TN+FP);
+        Double MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("N. of rules: "+(i)+" - Detection Rate: "+detectionRate+" - F-Measure: "+fmeasure+" - Precision: "+precision+" - Accuracy: "+accuracy+" - Specificity: "+specificity+" - MCC: "+MCC);
+        }
+    }
     public static ArrayList<Connection> filterProbe(ArrayList<Connection> l){
         ArrayList<Connection> l2= new ArrayList<>();
         for(Connection c: l){
@@ -147,24 +165,39 @@ public class Verifier {
                 (compare(c.getSrvDiffHostRate(),g[17], g[31]))){
             return true;}else{
         return false;}}
-        else{
-                if((compare(c.getDuration(),g[0], g[13])) &&
-                        (compare(c.getDstBytes(),g[1], g[14])) &&
-                        (compare(c.getLoggedIn(),g[2], g[15])) &&
-                        (compare(c.getSuAttempted(), g[3], g[16])) &&
-                        (compare(c.getNumShells(), g[4], g[17])) &&
-                        (compare(c.getNumRoot(),g[5], g[18])) &&
-                        (compare(c.getNumFilesCreations(), g[6], g[19])) &&
-                        (compare(c.getNumAccessFiles(),g[7], g[20])) &&
-                        (compare(c.getSrvDiffHostRate(),g[8], g[21])) &&
-                        (compare(c.getDstHostSrvDiffHostRate(),g[9], g[22])) &&
-                        (compare(c.getRerrorRate(),g[10], g[23])) &&
-                        (compare(c.getDstHostCount(),g[11], g[24])) &&
-                        (compare(c.getFlag(),g[12], EQUALS))){
+        else if(g.length==22){
+                if((compare(c.getDuration(),g[0], g[11])) &&
+                        (compare(c.getSrcBytes(),g[1], g[12])) &&
+                        (compare(c.getDstBytes(),g[2], g[13])) &&
+                        (compare(c.getLoggedIn(),g[3], g[14])) &&
+                        (compare(c.getSuAttempted(), g[4], g[15])) &&
+                        (compare(c.getNumShells(), g[5], g[16])) &&
+                        (compare(c.getNumRoot(),g[6], g[17])) &&
+                        (compare(c.getNumFilesCreations(), g[7], g[18])) &&
+                        (compare(c.getNumAccessFiles(),g[8], g[19])) &&
+                        (compare(c.getSrvDiffHostRate(),g[9], g[20])) &&
+                        (compare(c.getDstHostSrvDiffHostRate(),g[10], g[21]))
+                       ){
                     return true;}else{
                     return false;}
                 }
-
+        else {
+            if((compare(c.getDuration(),g[0], g[13])) &&
+                    (compare(c.getDstBytes(),g[1], g[14])) &&
+                    (compare(c.getLoggedIn(),g[2], g[15])) &&
+                    (compare(c.getSuAttempted(), g[3], g[16])) &&
+                    (compare(c.getNumShells(), g[4], g[17])) &&
+                    (compare(c.getNumRoot(),g[5], g[18])) &&
+                    (compare(c.getNumFilesCreations(), g[6], g[19])) &&
+                    (compare(c.getNumAccessFiles(),g[7], g[20])) &&
+                    (compare(c.getSrvDiffHostRate(),g[8], g[21])) &&
+                    (compare(c.getDstHostSrvDiffHostRate(),g[9], g[22])) &&
+                    (compare(c.getRerrorRate(),g[10], g[23])) &&
+                    (compare(c.getDstHostCount(),g[11], g[24])) &&
+                    (compare(c.getFlag(),g[12], EQUALS))){
+                return true;}else{
+                return false;}
+        }
 
     }
 
@@ -259,11 +292,11 @@ public class Verifier {
         System.out.println("Attacchi totali in dataset: "+mapAttacks.toString());
 
         int[] bestDosNoNeptune= new int[]{4460,3,10,1,243,9956,0,0,0,1,0,33,31,15,13,78,13,100,1,2,1,2,2,2,2,1,1,1,1,2,1,1};
-        int[] bestDosOnlyNeptune= new int[]{23461,1,12,5,494,4581,0,1,0,0,45,46,42,75,72,100,100,16,1,1,1,1,2,2,1,2,2,1,1,1,1,1}; //poco utile
+        int[] bestDosOnlyNeptune= new int[]{23461,1,12,5,494,4581,0,1,0,0,45,46,42,75,72,100,100,16,1,1,1,1,2,2,1,2,2,1,1,1,1,1}; //poco utile/
         int[] bestNoFilter= new int[]{44141,1,12,5,995,7680,0,2,0,0,28,2,41,96,75,0,100,9,1,1,1,1,1,2,1,2,2,1,1,2,1,1};
         int[] bestNoDos = new int[]{47494,1,11,3,189,8016,0,1,0,3,81,55,72,38,23,0,100,29,1,1,1,1,2,2,1,1,1,2,2,2,1,1};
-        int[] bestProbe = new int[]{44907,1,11,3,925,3358,0,2,3,8,44,76,48,7,28,0,100,0,1,1,1,1,1,2,1,1,1,2,2,2,1,1}; //poco utile
-        int[] bestProbeNoPortsweep = new int[]{36830,1,11,3,402,9571,0,0,0,25,73,99,5,41,57,36,53,63,1,1,1,2,2,2,1,1,1,2,2,1,2,1};//poco utile
+        int[] bestProbe = new int[]{44907,1,11,3,925,3358,0,2,3,8,44,76,48,7,28,0,100,0,1,1,1,1,1,2,1,1,1,2,2,2,1,1}; //poco utile/
+        int[] bestProbeNoPortsweep = new int[]{36830,1,11,3,402,9571,0,0,0,25,73,99,5,41,57,36,53,63,1,1,1,2,2,2,1,1,1,2,2,1,2,1};//poco utile/
         int[] bestRuleMissingNeptunes= new int[]{32065,1,12,3,689,7717,0,2,3,0,40,98,75,30,95,100,0,39,1,1,1,1,1,2,1,1,1,2,2,1,2,1};
         int[] bestRuleMissingTeardropAndIpSweep = new int[]{43302,3,8,1,23,589,0,3,2,0,1,100,86,0,0,0,100,100,1,1,1,1,1,2,2,1,1,2,1,2,1,1};
         ArrayList<int[]> bestRules= new ArrayList<>();
@@ -284,16 +317,20 @@ public class Verifier {
         bestRules.add(bestRuleMissingWarezclient);
         int[] bestRuleMissingSatan = new int[]{6172,2,12,1,416,92,0,0,0,2,0,44,55,0,54,0,93,70,1,1,1,2,2,2,2,1,1,1,1,2,1,1}; //AGGIUNGE FALSI POSITIVI
         bestRules.add(bestRuleMissingSatan);
-        int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features
+        int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features/
         int[] bestRuleMoreMoreMissingPortsweep = new int[]{49018,24,0,0,1,232,12,1,81,93,63,73,8,1,1,2,2,1,1,1,1,1,1,2,2}; //Probe features
         bestRules.add(bestRuleMoreMoreMissingPortsweep);
         int[] bestRuleMoreProbe = new int[]{0,1303,1,2,0,840,14,5,2,0,26,23,3,1,1,1,1,1,1,1,1,1,2,2,2}; //Probe features
         bestRules.add(bestRuleMoreProbe);
-        int[] bestRuleMoreMoreProbe = new int[]{13,125,1,0,0,0,0,0,0,0,98,255,1,1,1,1,2,1,1,1,1,1,2,1,1}; //Probe features, aggiunge molti FP
+        int[] bestRuleMoreMoreProbe = new int[]{13,125,1,0,0,0,0,0,0,0,98,255,1,1,1,1,2,1,1,1,1,1,2,1,1}; //Probe features, aggiunge molti FP/
         int[] bestRuleMorePortsweep = new int[]{44943,247,0,0,0,58,22,7,42,98,1,48,9,1,1,1,1,1,1,1,1,1,1,2,2}; //Probe features
         bestRules.add(bestRuleMorePortsweep);
         int[] bestRuleMoreNeptune = new int[]{15464,1,6,5,457,9114,0,0,0,0,37,33,13,72,76,0,83,56,1,1,1,2,2,2,1,2,2,1,1,2,1,1}; //Probe features
         bestRules.add(bestRuleMoreNeptune);
+        int[] bestRuleMoreU2r = new int[]{14,6,7188,0,0,2,187,23,7,100,3,1,1,1,2,1,1,1,1,1,1,1}; //U2R features
+        bestRules.add(bestRuleMoreU2r);
+        int[] bestRuleMoreWarezclient = new int[]{15203,350,1184,0,0,0,56,21,7,100,0,1,2,2,2,1,2,1,1,1,1,1}; //U2R features
+        bestRules.add(bestRuleMoreWarezclient);
         ArrayList<Double> results= performanceRuleSet(bestRules, (ArrayList<Connection>) l);
         System.out.println("Attacchi trovati: "+mapFound.toString());
         HashMap<String, Integer> mapMissingAttacks = findMissingAttacks(mapAttacks, mapFound);
@@ -302,6 +339,7 @@ public class Verifier {
         Double TN= results.get(1);
         Double FP= results.get(2);
         Double FN= results.get(3);
+        Double fmeasure= (TP)/(TP+(FP+FN)/2);
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double detectionRate= (TP)/(FN+TP);
         Double falseAlarms= (FP)/(TN+FP);
@@ -315,6 +353,7 @@ public class Verifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
         HashMap<String, Double> attacksPercentage= findAttackPercentages(mapAttacks, mapFound);
         System.out.println("Percentuali tipi di attacchi trovati:\n"+attacksPercentage.toString());
         System.out.println("Numero di regole concatenate: "+bestRules.size());
@@ -332,6 +371,7 @@ public class Verifier {
         TN= results.get(1);
         FP= results.get(2);
         FN= results.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
         accuracy= ((TP+TN)/(TP+TN+FP+FN));
         detectionRate= (TP)/(FN+TP);
         falseAlarms= (FP)/(TN+FP);
@@ -346,6 +386,7 @@ public class Verifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
         missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
@@ -361,6 +402,7 @@ public class Verifier {
         TN= results.get(1);
         FP= results.get(2);
         FN= results.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
         accuracy= ((TP+TN)/(TP+TN+FP+FN));
         detectionRate= (TP)/(FN+TP);
         falseAlarms= (FP)/(TN+FP);
@@ -375,6 +417,7 @@ public class Verifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
         missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
@@ -390,6 +433,7 @@ public class Verifier {
         TN= results.get(1);
         FP= results.get(2);
         FN= results.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
         accuracy= ((TP+TN)/(TP+TN+FP+FN));
         detectionRate= (TP)/(FN+TP);
         falseAlarms= (FP)/(TN+FP);
@@ -404,6 +448,7 @@ public class Verifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
         missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
@@ -419,6 +464,7 @@ public class Verifier {
         TN= results.get(1);
         FP= results.get(2);
         FN= results.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
         accuracy= ((TP+TN)/(TP+TN+FP+FN));
         detectionRate= (TP)/(FN+TP);
         falseAlarms= (FP)/(TN+FP);
@@ -433,8 +479,10 @@ public class Verifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
         missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
+        plotStatistics(bestRules);
     }
 }

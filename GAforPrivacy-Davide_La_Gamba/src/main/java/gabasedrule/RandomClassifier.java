@@ -278,8 +278,7 @@ public class RandomClassifier {
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
 
-
-        results= randomClassifySpecificWeightedAttacks(l, percentages);
+         results= randomClassifyGenericsWeightedAttacks(l, percentages);
         TP= results.get(0);
         TN= results.get(1);
         FP= results.get(2);

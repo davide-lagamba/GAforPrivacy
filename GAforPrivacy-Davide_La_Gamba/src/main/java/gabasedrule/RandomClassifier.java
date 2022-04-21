@@ -211,18 +211,44 @@ public class RandomClassifier {
     }
 
     public static void main(String[] args) throws IOException {
+        int rep=100;
+        ArrayList<Double> results;
         l = (ArrayList<Connection>) DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-        ArrayList<Double> results= randomClassifySpecificAttacks(l);
-        Double TP= results.get(0);
-        Double TN= results.get(1);
-        Double FP= results.get(2);
-        Double FN= results.get(3);
-        Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        Double detectionRate= (TP)/(FN+TP);
-        Double falseAlarms= (FP)/(TN+FP);
-        Double precision = (TP)/(TP+FP);
-        Double specificity=TN/(TN+FP);
-        Double MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        Double accuracy=0.0;
+        Double detectionRate=0.0;
+        Double falseAlarms=0.0;
+        Double precision=0.0;
+        Double specificity=0.0;
+        Double MCC=0.0;
+        Double tmpaccuracy=0.0;
+        Double tmpdetectionRate=0.0;
+        Double tmpfalseAlarms=0.0;
+        Double tmpprecision=0.0;
+        Double tmpspecificity=0.0;
+        Double tmpMCC=0.0;
+        Double TP=0.0;
+        Double TN=0.0;
+        Double FP=0.0;
+        Double FN=0.0;
+       for(int i=0; i<rep; i++){
+        results= randomClassifySpecificAttacks(l);
+         TP= results.get(0);
+         TN= results.get(1);
+         FP= results.get(2);
+         FN= results.get(3);
+           tmpaccuracy += ((TP+TN)/(TP+TN+FP+FN));
+           tmpdetectionRate += (TP)/(FN+TP);
+           tmpfalseAlarms+= (FP)/(TN+FP);
+           tmpprecision += (TP)/(TP+FP);
+           tmpspecificity+=TN/(TN+FP);
+           tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+
+        accuracy=tmpaccuracy/rep;
+        detectionRate=tmpdetectionRate/rep;
+        falseAlarms=tmpfalseAlarms/rep;
+        precision=tmpprecision/rep;
+        specificity=tmpspecificity/rep;
+        MCC=tmpMCC/rep;
         System.out.println("Risultati relativi ad attacchi specifici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy);
@@ -233,17 +259,31 @@ public class RandomClassifier {
         System.out.println("MCC: "+MCC);
 
 
-        results= randomClassifyGenericsAttacks(l);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        precision = (TP)/(TP+FP);
-        specificity=TN/(TN+FP);
-        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        tmpaccuracy=0.0;
+        tmpdetectionRate=0.0;
+        tmpfalseAlarms=0.0;
+        tmpprecision=0.0;
+        tmpspecificity=0.0;
+        tmpMCC=0.0;
+        for(int i=0; i<rep; i++){
+            results= randomClassifyGenericsAttacks(l);
+            TP= results.get(0);
+            TN= results.get(1);
+            FP= results.get(2);
+            FN= results.get(3);
+            tmpaccuracy += ((TP+TN)/(TP+TN+FP+FN));
+            tmpdetectionRate += (TP)/(FN+TP);
+            tmpfalseAlarms+= (FP)/(TN+FP);
+            tmpprecision += (TP)/(TP+FP);
+            tmpspecificity+=TN/(TN+FP);
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+
+        accuracy=tmpaccuracy/rep;
+        detectionRate=tmpdetectionRate/rep;
+        falseAlarms=tmpfalseAlarms/rep;
+        precision=tmpprecision/rep;
+        specificity=tmpspecificity/rep;
+        MCC=tmpMCC/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -254,20 +294,33 @@ public class RandomClassifier {
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
 
-
+        tmpaccuracy=0.0;
+        tmpdetectionRate=0.0;
+        tmpfalseAlarms=0.0;
+        tmpprecision=0.0;
+        tmpspecificity=0.0;
+        tmpMCC=0.0;
         ArrayList<Double> percentages = findPercentages(l);
         System.out.println("Percentuali\nnormal: "+percentages.get(0)+"\nprobe: "+percentages.get(1)+"\ndos: "+percentages.get(2)+"\nu2r: "+percentages.get(3)+"\nr2l: "+percentages.get(4));
-        results= randomClassifySpecificWeightedAttacks(l, percentages);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        precision = (TP)/(TP+FP);
-        specificity=TN/(TN+FP);
-        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        for(int i=0; i<rep; i++){
+            results= randomClassifySpecificWeightedAttacks(l, percentages);
+            TP= results.get(0);
+            TN= results.get(1);
+            FP= results.get(2);
+            FN= results.get(3);
+            tmpaccuracy += ((TP+TN)/(TP+TN+FP+FN));
+            tmpdetectionRate += (TP)/(FN+TP);
+            tmpfalseAlarms+= (FP)/(TN+FP);
+            tmpprecision += (TP)/(TP+FP);
+            tmpspecificity+=TN/(TN+FP);
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+
+        accuracy=tmpaccuracy/rep;
+        detectionRate=tmpdetectionRate/rep;
+        falseAlarms=tmpfalseAlarms/rep;
+        precision=tmpprecision/rep;
+        specificity=tmpspecificity/rep;
+        MCC=tmpMCC/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi specifici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -278,17 +331,31 @@ public class RandomClassifier {
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
 
-         results= randomClassifyGenericsWeightedAttacks(l, percentages);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        precision = (TP)/(TP+FP);
-        specificity=TN/(TN+FP);
-        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        tmpaccuracy=0.0;
+        tmpdetectionRate=0.0;
+        tmpfalseAlarms=0.0;
+        tmpprecision=0.0;
+        tmpspecificity=0.0;
+        tmpMCC=0.0;
+        for(int i=0; i<rep; i++){
+            results= randomClassifyGenericsWeightedAttacks(l, percentages);
+            TP= results.get(0);
+            TN= results.get(1);
+            FP= results.get(2);
+            FN= results.get(3);
+            tmpaccuracy += ((TP+TN)/(TP+TN+FP+FN));
+            tmpdetectionRate += (TP)/(FN+TP);
+            tmpfalseAlarms+= (FP)/(TN+FP);
+            tmpprecision += (TP)/(TP+FP);
+            tmpspecificity+=TN/(TN+FP);
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+
+        accuracy=tmpaccuracy/rep;
+        detectionRate=tmpdetectionRate/rep;
+        falseAlarms=tmpfalseAlarms/rep;
+        precision=tmpprecision/rep;
+        specificity=tmpspecificity/rep;
+        MCC=tmpMCC/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);

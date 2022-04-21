@@ -297,17 +297,18 @@ public class RunnerConfig5 {
         System.out.println("Number of attacks: "+A+"\nNumber of normal connections: "+B);
         System.out.println("Attacks: "+mapAttacks.toString());
         final Factory<Genotype<IntegerGene>> GTF = Genotype.of(
-                IntegerChromosome.of(0, 58329),
-                IntegerChromosome.of(1, 3),
-                IntegerChromosome.of(1,66),
-                IntegerChromosome.of(1, 11),
-                IntegerChromosome.of(0,999),
-                IntegerChromosome.of(0,9999),
-                IntegerChromosome.of(0,1),
-                IntegerChromosome.of(0,3,2),
-                IntegerChromosome.of(0, 99, 2),
-                IntegerChromosome.of(0, 100, 7),
-                IntegerChromosome.of(1, 2, 14)
+                IntegerChromosome.of(0, 58329),//duration (1)
+                IntegerChromosome.of(1, 3),//protocolType (2)
+                IntegerChromosome.of(1,66),//service (3)
+                IntegerChromosome.of(1, 11),//flag (4)
+                IntegerChromosome.of(0,999),//srcBytes (5)
+                IntegerChromosome.of(0,9999),//dstBytes (6)
+                IntegerChromosome.of(0,1),//land (7)
+                IntegerChromosome.of(0,3,2),//wrongFragment (8) e urgent (9)
+                IntegerChromosome.of(0, 99, 2),//count (23) e srvCount (24)
+                IntegerChromosome.of(0, 100, 7),//serrorRate (25), srvSerrorRate (26), rerrorRate (27),
+                // srvRerrorRate (28), sameSrvRate (29), diffSrvRate (30) e srvDiffHostRate (31)
+                IntegerChromosome.of(1, 2, 14)//segni diseguaglianze
         );
 
         final Engine<IntegerGene, Double> engine;
@@ -369,16 +370,16 @@ public class RunnerConfig5 {
 
 //feature più rilevanti per la classe "normal" e per gli attacchi di tipo "probe"
         final Factory<Genotype<IntegerGene>> GTF = Genotype.of(
-                IntegerChromosome.of(0, 58329),//duration
-                IntegerChromosome.of(0,9999),//dstBytes
-                IntegerChromosome.of(0,1),//loggedIn
-                IntegerChromosome.of(0,2, 2), //suAttempted e numShells
-                IntegerChromosome.of(0, 993), //numRoot
-                IntegerChromosome.of(0, 28), //numFilesCreations
-                IntegerChromosome.of(0, 8), //numAccessFiles
-                IntegerChromosome.of(0, 100, 3), //srvDiffHostRate e dstHostSrvDiffHostRate e rerrorRate
-                IntegerChromosome.of(0, 260), //dstHostCount
-                IntegerChromosome.of(1, 11), //flag (map)
+                IntegerChromosome.of(0, 58329),//duration (1)
+                IntegerChromosome.of(0,9999),//dstBytes (6)
+                IntegerChromosome.of(0,1),//loggedIn (12)
+                IntegerChromosome.of(0,2, 2), //suAttempted (15) e numShells (18)
+                IntegerChromosome.of(0, 993), //numRoot (16)
+                IntegerChromosome.of(0, 28), //numFilesCreations (17)
+                IntegerChromosome.of(0, 8), //numAccessFiles (19)
+                IntegerChromosome.of(0, 100, 3), //srvDiffHostRate (31), dstHostSrvDiffHostRate (37) e rerrorRate (27)
+                IntegerChromosome.of(0, 260), //dstHostCount (32)
+                IntegerChromosome.of(1, 11), //flag (map) (4)
                 IntegerChromosome.of(1, 2, 12) //segni diseguaglianze
         );
 

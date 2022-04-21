@@ -77,7 +77,7 @@ public class DatasetLoader {
             connection.setDstHostRerrorRate((int) Math.round(Double.parseDouble(record.get(Connection.COLUMN_DST_HOST_RERROR_RATE))*100));
             connection.setDstHostSrvRerrorRate((int) Math.round(Double.parseDouble(record.get(Connection.COLUMN_DST_HOST_SRV_RERROR_RATE))*100));
 
-            connection.setLabel(record.get(Connection.COLUMN_LABEL));
+            connection.setLabel(record.get(Connection.COLUMN_LABEL).replace(".",""));
 
             connessioni.add(connection);
         }

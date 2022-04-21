@@ -34,13 +34,29 @@ public class Verifier {
         Double TN= results.get(1);
         Double FP= results.get(2);
         Double FN= results.get(3);
+        Double falseAlarms= (FP)/(TN+FP);
         Double fmeasure= (TP)/(TP+(FP+FN)/2);
         Double detectionRate= (TP)/(FN+TP);
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double precision = (TP)/(TP+FP);
         Double specificity=TN/(TN+FP);
         Double MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
-        System.out.println("N. of rules: "+(i)+" - Detection Rate: "+detectionRate+" - F-Measure: "+fmeasure+" - Precision: "+precision+" - Accuracy: "+accuracy+" - Specificity: "+specificity+" - MCC: "+MCC);
+        System.out.println("N. of rules: "+(i)+" - Detection Rate: "+detectionRate+" - F-Measure: "+fmeasure+" - Precision: "+precision+" - Accuracy: "+accuracy+" - Specificity: "+specificity+" - MCC: "+MCC+" - False Alarms: "+falseAlarms);
+        }
+    }
+
+    public static void plotConfusionMatrixCSV(ArrayList<int[]> rules){
+        ArrayList<int[]> rulesTmp;
+        System.out.println("N. di regole,True Positive,True Negative,False Positive,False Negative");
+        for(int i=1; i<= rules.size();i++){
+            rulesTmp= new ArrayList<int[]>(rules.subList(0, i));
+            ArrayList<Double> results= performanceRuleSet(rulesTmp, (ArrayList<Connection>) l);
+            Double TP= results.get(0);
+            Double TN= results.get(1);
+            Double FP= results.get(2);
+            Double FN= results.get(3);
+
+            System.out.println(""+i+","+TP+","+TN+","+FP+","+FN);
         }
     }
     public static ArrayList<Connection> filterProbe(ArrayList<Connection> l){
@@ -273,7 +289,8 @@ public class Verifier {
     }
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-//        System.out.println(l.size());
+//        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.csv"));
+        System.out.println(l.size());
         A=B=0.0;
         int n=0;
         for(Connection c: l){
@@ -317,7 +334,8 @@ public class Verifier {
         bestRules.add(bestRuleMissingWarezclient);
         int[] bestRuleMissingSatan = new int[]{6172,2,12,1,416,92,0,0,0,2,0,44,55,0,54,0,93,70,1,1,1,2,2,2,2,1,1,1,1,2,1,1}; //AGGIUNGE FALSI POSITIVI
         bestRules.add(bestRuleMissingSatan);
-        int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features/
+        int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features/ poco utile
+//        bestRules.add(bestRuleMissingNmap);
         int[] bestRuleMoreMoreMissingPortsweep = new int[]{49018,24,0,0,1,232,12,1,81,93,63,73,8,1,1,2,2,1,1,1,1,1,1,2,2}; //Probe features
         bestRules.add(bestRuleMoreMoreMissingPortsweep);
         int[] bestRuleMoreProbe = new int[]{0,1303,1,2,0,840,14,5,2,0,26,23,3,1,1,1,1,1,1,1,1,1,2,2,2}; //Probe features
@@ -484,5 +502,6 @@ public class Verifier {
         missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
         plotStatistics(bestRules);
+        plotConfusionMatrixCSV(bestRules);
     }
 }

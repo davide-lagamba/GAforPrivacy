@@ -25,11 +25,11 @@ public class Verifier {
     private static HashMap<String, Integer> mapFound = new HashMap<>();
 
 
-    public static void plotStatistics(ArrayList<int[]> rules){
+    public static void plotStatistics(ArrayList<int[]> rules, ArrayList<Connection> l){
         ArrayList<int[]> rulesTmp;
         for(int i=1; i<= rules.size();i++){
             rulesTmp= new ArrayList<int[]>(rules.subList(0, i));
-        ArrayList<Double> results= performanceRuleSet(rulesTmp, (ArrayList<Connection>) l);
+        ArrayList<Double> results= performanceRuleSet(rulesTmp, l);
         Double TP= results.get(0);
         Double TN= results.get(1);
         Double FP= results.get(2);
@@ -45,7 +45,7 @@ public class Verifier {
         }
     }
 
-    public static void plotConfusionMatrixCSV(ArrayList<int[]> rules){
+    public static void plotConfusionMatrixCSV(ArrayList<int[]> rules, ArrayList<Connection> l){
         ArrayList<int[]> rulesTmp;
         System.out.println("N. di regole,True Positive,True Negative,False Positive,False Negative");
         for(int i=1; i<= rules.size();i++){
@@ -259,6 +259,9 @@ public class Verifier {
     }
 
     static List<Connection> missingAttacksList(List<Connection> list, ArrayList<int[]> ruleSet){
+        if(ruleSet.isEmpty()){
+            return list;
+        }
         ArrayList<Connection> result= new ArrayList<>();
         int t;
         for(Connection c: list){
@@ -267,10 +270,28 @@ public class Verifier {
                 if(!compareConnectionWithRule(c, g)){
                     t++;}
         }
-            if(c.getLabel().equalsIgnoreCase("normal") || t== ruleSet.size()){
+            if(c.getLabel().equalsIgnoreCase("normal") || t==ruleSet.size()){
                 result.add(c);
             }
     }
+        return result;}
+
+    static List<Connection> missingOnlyAttacksList(List<Connection> list, ArrayList<int[]> ruleSet){
+        if(ruleSet.isEmpty()){
+            return list;
+        }
+        ArrayList<Connection> result= new ArrayList<>();
+        int t;
+        for(Connection c: list){
+            t=0;
+            for(int[] g: ruleSet){
+                if(!compareConnectionWithRule(c, g)){
+                    t++;}
+            }
+            if(t== ruleSet.size() && !(c.getLabel().equals("normal"))){
+                result.add(c);
+            }
+        }
         return result;}
 
 
@@ -287,6 +308,24 @@ public class Verifier {
         }
         return missing;
     }
+
+    static HashMap<String, Integer> findAttacks(ArrayList<Connection> l){
+
+        HashMap<String, Integer> mapAttacksTmp = new HashMap<>();
+        int n=0;
+        for(Connection c: l){
+            String label= c.getLabel();
+            if(!(label.equalsIgnoreCase("normal")))
+               {
+                n=0;
+                if(mapAttacksTmp.containsKey(label)){
+                    n=mapAttacksTmp.get(label);
+                }
+                   mapAttacksTmp.put(label, n+1);
+            }
+        }
+        return mapAttacksTmp;
+    }
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
 //        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.csv"));
@@ -299,10 +338,10 @@ public class Verifier {
                 B++;
             else {A++;
                 n=0;
-            if(mapAttacks.containsKey(label)){
-                n=mapAttacks.get(label);
-            }
-            mapAttacks.put(label, n+1);
+                if(mapAttacks.containsKey(label)){
+                    n=mapAttacks.get(label);
+                }
+                mapAttacks.put(label, n+1);
             }
         }
         System.out.println("Number of attacks in dataset: "+A+"\nNumber of normal connections: "+B);
@@ -335,7 +374,6 @@ public class Verifier {
         int[] bestRuleMissingSatan = new int[]{6172,2,12,1,416,92,0,0,0,2,0,44,55,0,54,0,93,70,1,1,1,2,2,2,2,1,1,1,1,2,1,1}; //AGGIUNGE FALSI POSITIVI
         bestRules.add(bestRuleMissingSatan);
         int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features/ poco utile
-//        bestRules.add(bestRuleMissingNmap);
         int[] bestRuleMoreMoreMissingPortsweep = new int[]{49018,24,0,0,1,232,12,1,81,93,63,73,8,1,1,2,2,1,1,1,1,1,1,2,2}; //Probe features
         bestRules.add(bestRuleMoreMoreMissingPortsweep);
         int[] bestRuleMoreProbe = new int[]{0,1303,1,2,0,840,14,5,2,0,26,23,3,1,1,1,1,1,1,1,1,1,2,2,2}; //Probe features
@@ -375,7 +413,7 @@ public class Verifier {
         HashMap<String, Double> attacksPercentage= findAttackPercentages(mapAttacks, mapFound);
         System.out.println("Percentuali tipi di attacchi trovati:\n"+attacksPercentage.toString());
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        ArrayList<Connection> missingAttacksList= (ArrayList<Connection>) missingAttacksList(l, bestRules);
+        ArrayList<Connection> missingAttacksList= (ArrayList<Connection>) missingOnlyAttacksList(l, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //Probe
@@ -383,8 +421,8 @@ public class Verifier {
         results= performanceRuleSet(bestRules, lProbe);
         System.out.println("////////////");
         System.out.println("Attacchi trovati Probe: "+mapFound.toString());
-        HashMap<String, Integer> mapMissingAttacksProbe = findMissingAttacks(mapAttacks, mapFound);
-        System.out.println("Attacchi mancanti Probe: "+mapMissingAttacks.toString());
+        HashMap<String, Integer> mapMissingAttacksProbe = findMissingAttacks(findAttacks(lProbe), mapFound);
+        System.out.println("Attacchi mancanti Probe: "+mapMissingAttacksProbe.toString());
         TP= results.get(0);
         TN= results.get(1);
         FP= results.get(2);
@@ -406,7 +444,7 @@ public class Verifier {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingOnlyAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //Dos
@@ -414,8 +452,8 @@ public class Verifier {
         results= performanceRuleSet(bestRules, lDos);
         System.out.println("////////////");
         System.out.println("Attacchi trovati Dos: "+mapFound.toString());
-        HashMap<String, Integer> mapMissingAttacksDos = findMissingAttacks(mapAttacks, mapFound);
-        System.out.println("Attacchi mancanti Dos: "+mapMissingAttacks.toString());
+        HashMap<String, Integer> mapMissingAttacksDos = findMissingAttacks(findAttacks(lDos), mapFound);
+        System.out.println("Attacchi mancanti Dos: "+mapMissingAttacksDos.toString());
         TP= results.get(0);
         TN= results.get(1);
         FP= results.get(2);
@@ -437,7 +475,7 @@ public class Verifier {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingOnlyAttacksList(lDos, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //U2R
@@ -445,8 +483,8 @@ public class Verifier {
         results= performanceRuleSet(bestRules, lU2r);
         System.out.println("////////////");
         System.out.println("Attacchi trovati U2r: "+mapFound.toString());
-        HashMap<String, Integer> mapMissingAttacksU2r = findMissingAttacks(mapAttacks, mapFound);
-        System.out.println("Attacchi mancanti U2r: "+mapMissingAttacks.toString());
+        HashMap<String, Integer> mapMissingAttacksU2r = findMissingAttacks(findAttacks(lU2r), mapFound);
+        System.out.println("Attacchi mancanti U2r: "+mapMissingAttacksU2r.toString());
         TP= results.get(0);
         TN= results.get(1);
         FP= results.get(2);
@@ -468,7 +506,7 @@ public class Verifier {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingOnlyAttacksList(lU2r, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //R2L
@@ -476,8 +514,8 @@ public class Verifier {
         results= performanceRuleSet(bestRules, lR2l);
         System.out.println("////////////");
         System.out.println("Attacchi trovati R2l: "+mapFound.toString());
-        HashMap<String, Integer> mapMissingAttacksR2l = findMissingAttacks(mapAttacks, mapFound);
-        System.out.println("Attacchi mancanti R2l: "+mapMissingAttacks.toString());
+        HashMap<String, Integer> mapMissingAttacksR2l = findMissingAttacks(findAttacks(lR2l), mapFound);
+        System.out.println("Attacchi mancanti R2l: "+mapMissingAttacksR2l.toString());
         TP= results.get(0);
         TN= results.get(1);
         FP= results.get(2);
@@ -499,9 +537,9 @@ public class Verifier {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingOnlyAttacksList(lR2l, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
-        plotStatistics(bestRules);
-        plotConfusionMatrixCSV(bestRules);
+        plotStatistics(bestRules, (ArrayList<Connection>) l);
+        plotConfusionMatrixCSV(bestRules, (ArrayList<Connection>) l);
     }
 }

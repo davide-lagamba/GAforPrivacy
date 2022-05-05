@@ -2,6 +2,7 @@ package gabasedrule.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Connection {
     public static final int COLUMN_DURATION = 0;
@@ -174,6 +175,19 @@ public class Connection {
     private Integer dstHostSrvSerrorRate;//(0.00, 1.00)
     private Integer dstHostRerrorRate;//(0.00, 1.00)
     private Integer dstHostSrvRerrorRate;//(0.00, 1.00)
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Connection that = (Connection) o;
+        return Objects.equals(getDuration(), that.getDuration()) && Objects.equals(getProtocolType(), that.getProtocolType()) && Objects.equals(getService(), that.getService()) && Objects.equals(getFlag(), that.getFlag()) && Objects.equals(getSrcBytes(), that.getSrcBytes()) && Objects.equals(getDstBytes(), that.getDstBytes()) && Objects.equals(getLand(), that.getLand()) && Objects.equals(getWrongFragment(), that.getWrongFragment()) && Objects.equals(getUrgent(), that.getUrgent()) && Objects.equals(getCount(), that.getCount()) && Objects.equals(getSrvCount(), that.getSrvCount()) && Objects.equals(getSerrorRate(), that.getSerrorRate()) && Objects.equals(getSrvSerrorRate(), that.getSrvSerrorRate()) && Objects.equals(getRerrorRate(), that.getRerrorRate()) && Objects.equals(getSrvRerrorRate(), that.getSrvRerrorRate()) && Objects.equals(getSameSrvRate(), that.getSameSrvRate()) && Objects.equals(getDiffSrvRate(), that.getDiffSrvRate()) && Objects.equals(getSrvDiffHostRate(), that.getSrvDiffHostRate()) && Objects.equals(getLabel(), that.getLabel()) && Objects.equals(getHot(), that.getHot()) && Objects.equals(getNumFailedLogins(), that.getNumFailedLogins()) && Objects.equals(getLoggedIn(), that.getLoggedIn()) && Objects.equals(getNumCompromised(), that.getNumCompromised()) && Objects.equals(getRootShell(), that.getRootShell()) && Objects.equals(getSuAttempted(), that.getSuAttempted()) && Objects.equals(getNumRoot(), that.getNumRoot()) && Objects.equals(getNumFilesCreations(), that.getNumFilesCreations()) && Objects.equals(getNumShells(), that.getNumShells()) && Objects.equals(getNumAccessFiles(), that.getNumAccessFiles()) && Objects.equals(getNumOutboundCmds(), that.getNumOutboundCmds()) && Objects.equals(getIsHostLogin(), that.getIsHostLogin()) && Objects.equals(getIsGuestLogin(), that.getIsGuestLogin()) && Objects.equals(getDstHostCount(), that.getDstHostCount()) && Objects.equals(getDstHostSrvCount(), that.getDstHostSrvCount()) && Objects.equals(getDstHostSameSrvRate(), that.getDstHostSameSrvRate()) && Objects.equals(getDstHostDiffSrvRate(), that.getDstHostDiffSrvRate()) && Objects.equals(getDstHomeSameSrcPortRate(), that.getDstHomeSameSrcPortRate()) && Objects.equals(getDstHostSrvDiffHostRate(), that.getDstHostSrvDiffHostRate()) && Objects.equals(getDstHostSerrorRate(), that.getDstHostSerrorRate()) && Objects.equals(getDstHostSrvSerrorRate(), that.getDstHostSrvSerrorRate()) && Objects.equals(getDstHostRerrorRate(), that.getDstHostRerrorRate()) && Objects.equals(getDstHostSrvRerrorRate(), that.getDstHostSrvRerrorRate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDuration(), getProtocolType(), getService(), getFlag(), getSrcBytes(), getDstBytes(), getLand(), getWrongFragment(), getUrgent(), getCount(), getSrvCount(), getSerrorRate(), getSrvSerrorRate(), getRerrorRate(), getSrvRerrorRate(), getSameSrvRate(), getDiffSrvRate(), getSrvDiffHostRate(), getLabel(), getHot(), getNumFailedLogins(), getLoggedIn(), getNumCompromised(), getRootShell(), getSuAttempted(), getNumRoot(), getNumFilesCreations(), getNumShells(), getNumAccessFiles(), getNumOutboundCmds(), getIsHostLogin(), getIsGuestLogin(), getDstHostCount(), getDstHostSrvCount(), getDstHostSameSrvRate(), getDstHostDiffSrvRate(), getDstHomeSameSrcPortRate(), getDstHostSrvDiffHostRate(), getDstHostSerrorRate(), getDstHostSrvSerrorRate(), getDstHostRerrorRate(), getDstHostSrvRerrorRate());
+    }
 
     @Override
     public String toString() {

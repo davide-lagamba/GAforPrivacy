@@ -7,14 +7,14 @@ import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionStatistics;
 import io.jenetics.util.Factory;
 
-import javax.xml.crypto.Data;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static gabasedrule.Verifier.*;
 import static io.jenetics.engine.EvolutionResult.toBestPhenotype;
 
-public class RunnerConfig10p {
+public class RunnerConfig100p {
 
     public static final Integer EQUALS=3;
     public static final Integer LESSER=1;
@@ -670,8 +670,7 @@ public class RunnerConfig10p {
 
         l=missingAttacksList(l, bestRules);
         System.out.println("Size l: "+l.size());
-        System.out.println("Size lValidation: "+lValidation.size());
-        System.out.println("REGOLA "+nRule+":");
+        System.out.println("REGOLA "+nRule+" (DOS):");
         A=B=0.0;
         mapAttacks2.clear();
         int n=0;
@@ -705,7 +704,7 @@ public class RunnerConfig10p {
 
         final Engine<IntegerGene, Double> engine;
         engine = Engine.builder(
-                        RunnerConfig10p::fitness,
+                        RunnerConfig100p::fitness,
                         GTF).populationSize(population)
                 .selector(new EliteSelector<>())
                 .optimize(Optimize.MAXIMUM)
@@ -738,24 +737,12 @@ public class RunnerConfig10p {
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double detectionRate= (TP)/(FN+TP);
         Double falseAlarms= (FP)/(TN+FP);
-        System.out.println("Training:");
+        System.out.println("Training and Validation:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy+"%");
         System.out.println("Detection Rate: "+detectionRate+"%");
         System.out.println("False Alarms: "+falseAlarms+"%");
-        results= performanceRuleSet(bestRules, (ArrayList<Connection>) lValidation);
-         TP= results.get(0);
-         TN= results.get(1);
-         FP= results.get(2);
-         FN= results.get(3);
-         accuracy= ((TP+TN)/(TP+TN+FP+FN));
-         detectionRate= (TP)/(FN+TP);
-         falseAlarms= (FP)/(TN+FP);
-        System.out.println("Validation:");
-        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
-        System.out.println("Accuracy: "+accuracy+"%");
-        System.out.println("Detection Rate: "+detectionRate+"%");
-        System.out.println("False Alarms: "+falseAlarms+"%");
+
     }
 
     public static void runDiversiDataset(int population, int generations, int nRule) throws IOException {
@@ -763,7 +750,6 @@ public class RunnerConfig10p {
         createTrainingAndValidationSetsNoSave();
         l=missingAttacksList(l, bestRules);
         System.out.println("Size l: "+l.size());
-        System.out.println("Size lValidation: "+lValidation.size());
         System.out.println("REGOLA "+nRule+":");
         A=B=0.0;
         mapAttacks.clear();
@@ -798,7 +784,7 @@ public class RunnerConfig10p {
 
         final Engine<IntegerGene, Double> engine;
         engine = Engine.builder(
-                        RunnerConfig10p::fitness,
+                        RunnerConfig100p::fitness,
                         GTF).populationSize(population)
                 .selector(new EliteSelector<>())
                 .optimize(Optimize.MAXIMUM)
@@ -831,32 +817,19 @@ public class RunnerConfig10p {
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double detectionRate= (TP)/(FN+TP);
         Double falseAlarms= (FP)/(TN+FP);
-        System.out.println("Training:");
+        System.out.println("Training and Validation:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy+"%");
         System.out.println("Detection Rate: "+detectionRate+"%");
         System.out.println("False Alarms: "+falseAlarms+"%");
-        results= performanceRuleSet(bestRules, (ArrayList<Connection>) lValidation);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        System.out.println("Validation:");
-        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
-        System.out.println("Accuracy: "+accuracy+"%");
-        System.out.println("Detection Rate: "+detectionRate+"%");
-        System.out.println("False Alarms: "+falseAlarms+"%");
+
     }
 
     public static void runProbe(int population, int generations, int nRule){
 
         l=missingAttacksList(l, bestRules);
         System.out.println("Size l: "+l.size());
-        System.out.println("Size lValidation: "+lValidation.size());
-        System.out.println("REGOLA "+nRule+":");
+        System.out.println("REGOLA "+nRule+" (PROBE):");
         A=B=0.0;
         mapAttacks2.clear();
         int n=0;
@@ -892,7 +865,7 @@ public class RunnerConfig10p {
 
         final Engine<IntegerGene, Double> engine;
         engine = Engine.builder(
-                        RunnerConfig10p::fitnessProbe,
+                        RunnerConfig100p::fitnessProbe,
                         GTF).populationSize(population)
                 .selector(new EliteSelector<>())
                 .optimize(Optimize.MAXIMUM)
@@ -925,20 +898,7 @@ public class RunnerConfig10p {
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double detectionRate= (TP)/(FN+TP);
         Double falseAlarms= (FP)/(TN+FP);
-        System.out.println("Training:");
-        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
-        System.out.println("Accuracy: "+accuracy+"%");
-        System.out.println("Detection Rate: "+detectionRate+"%");
-        System.out.println("False Alarms: "+falseAlarms+"%");
-        results= performanceRuleSet(bestRules, (ArrayList<Connection>) lValidation);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        System.out.println("Validation:");
+        System.out.println("Training and Validation:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy+"%");
         System.out.println("Detection Rate: "+detectionRate+"%");
@@ -949,8 +909,7 @@ public class RunnerConfig10p {
 
         l=missingAttacksList(l, bestRules);
         System.out.println("Size l: "+l.size());
-        System.out.println("Size lValidation: "+lValidation.size());
-        System.out.println("REGOLA "+nRule+":");
+        System.out.println("REGOLA "+nRule+" (U2R):");
         A=B=0.0;
         mapAttacks2.clear();
         int n=0;
@@ -986,7 +945,7 @@ public class RunnerConfig10p {
 
         final Engine<IntegerGene, Double> engine;
         engine = Engine.builder(
-                        RunnerConfig10p::fitnessU2r,
+                        RunnerConfig100p::fitnessU2r,
                         GTF).populationSize(population)
                 .selector(new EliteSelector<>())
                 .optimize(Optimize.MAXIMUM)
@@ -1019,24 +978,12 @@ public class RunnerConfig10p {
         Double accuracy= ((TP+TN)/(TP+TN+FP+FN));
         Double detectionRate= (TP)/(FN+TP);
         Double falseAlarms= (FP)/(TN+FP);
-        System.out.println("Training:");
+        System.out.println("Training and Validation:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy+"%");
         System.out.println("Detection Rate: "+detectionRate+"%");
         System.out.println("False Alarms: "+falseAlarms+"%");
-        results= performanceRuleSet(bestRules, (ArrayList<Connection>) lValidation);
-        TP= results.get(0);
-        TN= results.get(1);
-        FP= results.get(2);
-        FN= results.get(3);
-        accuracy= ((TP+TN)/(TP+TN+FP+FN));
-        detectionRate= (TP)/(FN+TP);
-        falseAlarms= (FP)/(TN+FP);
-        System.out.println("Validation:");
-        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
-        System.out.println("Accuracy: "+accuracy+"%");
-        System.out.println("Detection Rate: "+detectionRate+"%");
-        System.out.println("False Alarms: "+falseAlarms+"%");
+
     }
 
     public static void printStatisticsTraining(){
@@ -1287,7 +1234,7 @@ public class RunnerConfig10p {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lDos, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //U2R
@@ -1318,7 +1265,7 @@ public class RunnerConfig10p {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lU2r, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
 
         //R2L
@@ -1349,7 +1296,7 @@ public class RunnerConfig10p {
         System.out.println("MCC: "+MCC);
         System.out.println("F-Measure: "+fmeasure);
         System.out.println("Numero di regole concatenate: "+bestRules.size());
-        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lR2l, bestRules);
+        missingAttacksList= (ArrayList<Connection>) missingAttacksList(lProbe, bestRules);
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
         plotStatistics(bestRules, (ArrayList<Connection>) lValidation);
         plotConfusionMatrixCSV(bestRules, (ArrayList<Connection>) lValidation);
@@ -1391,7 +1338,7 @@ public class RunnerConfig10p {
 
         final Engine<IntegerGene, Double> engine;
         engine = Engine.builder(
-                        RunnerConfig10p::fitness,
+                        RunnerConfig100p::fitness,
                         GTF).populationSize(population)
                 .selector(new EliteSelector<>())
                 .optimize(Optimize.MAXIMUM)
@@ -1428,7 +1375,7 @@ public class RunnerConfig10p {
     }
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-        createTrainingAndValidationSetsNoSave();
+//        createTrainingAndValidationSetsNoSave();
         A=B=0.0;
         mapAttacks.clear();
         int n=0;
@@ -1445,37 +1392,20 @@ public class RunnerConfig10p {
             }
         }
 
-        A=B=0.0;
-        mapAttacksV.clear();
-        n=0;
-        for(Connection c: lValidation){
-            String label= c.getLabel();
-            if(label.equalsIgnoreCase("normal"))
-                B++;
-            else {A++;
-                n=0;
-                if(mapAttacksV.containsKey(label)){
-                    n=mapAttacksV.get(label);
-                }
-                mapAttacksV.put(label, n+1);
-            }
-        }
         lCopy= (List<Connection>) new ArrayList<>(l).clone();
 
-        System.out.println(lValidation.size());
         System.out.println(l.size());
 
         System.out.println(l.get(0));
-for(int i=1; i<=11; i++){
-    run(5000,1000, i);}
+for(int i=1; i<=10; i++){
+    runProbe(1000,1000, i);}
 
-for(int i=12; i<=15; i++){
-    runProbe(5000,1000, i);}
+for(int i=11; i<=14; i++){
+    run(1000,1000, i);}
 
-for(int i=16; i<=17; i++){
-    runU2r(5000,1000, i);}
+for(int i=15; i<=17; i++){
+    runU2r(1000,1000, i);}
 printStatisticsTraining();
-printStatisticsValidation();
 for(int[] e: bestRules)
     System.out.println(Arrays.toString(e));
     }

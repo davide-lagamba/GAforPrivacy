@@ -159,6 +159,7 @@ public class Verifier {
         }
 
     private static List<Connection> l;
+    private static List<Connection> lValidation;
     static boolean compareConnectionWithRule(Connection c, int[] g){
         if(g.length>30){
         if((compare(c.getDuration(),g[0], g[18])) &&
@@ -326,9 +327,24 @@ public class Verifier {
         }
         return mapAttacksTmp;
     }
+
+    public static ArrayList<Connection> get90percentDataset(ArrayList<Connection> l10p, ArrayList<Connection> l100p){
+        ArrayList<Connection> l90p= (ArrayList<Connection>) l100p.clone();
+        for(Connection c: l10p){
+            if(l90p.contains(c)){
+                l90p.remove(c);
+            }
+        }
+    return l90p;
+    }
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-//        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.csv"));
+        lValidation=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.labeled.csv"));
+        System.out.println(l.size());
+        System.out.println(lValidation.size());
+        lValidation=get90percentDataset((ArrayList<Connection>) l, (ArrayList<Connection>) lValidation);
+        System.out.println(lValidation.size());
+
         System.out.println(l.size());
         A=B=0.0;
         int n=0;
@@ -346,47 +362,43 @@ public class Verifier {
         }
         System.out.println("Number of attacks in dataset: "+A+"\nNumber of normal connections: "+B);
         System.out.println("Attacchi totali in dataset: "+mapAttacks.toString());
-
-        int[] bestDosNoNeptune= new int[]{4460,3,10,1,243,9956,0,0,0,1,0,33,31,15,13,78,13,100,1,2,1,2,2,2,2,1,1,1,1,2,1,1};
-        int[] bestDosOnlyNeptune= new int[]{23461,1,12,5,494,4581,0,1,0,0,45,46,42,75,72,100,100,16,1,1,1,1,2,2,1,2,2,1,1,1,1,1}; //poco utile/
-        int[] bestNoFilter= new int[]{44141,1,12,5,995,7680,0,2,0,0,28,2,41,96,75,0,100,9,1,1,1,1,1,2,1,2,2,1,1,2,1,1};
-        int[] bestNoDos = new int[]{47494,1,11,3,189,8016,0,1,0,3,81,55,72,38,23,0,100,29,1,1,1,1,2,2,1,1,1,2,2,2,1,1};
-        int[] bestProbe = new int[]{44907,1,11,3,925,3358,0,2,3,8,44,76,48,7,28,0,100,0,1,1,1,1,1,2,1,1,1,2,2,2,1,1}; //poco utile/
-        int[] bestProbeNoPortsweep = new int[]{36830,1,11,3,402,9571,0,0,0,25,73,99,5,41,57,36,53,63,1,1,1,2,2,2,1,1,1,2,2,1,2,1};//poco utile/
-        int[] bestRuleMissingNeptunes= new int[]{32065,1,12,3,689,7717,0,2,3,0,40,98,75,30,95,100,0,39,1,1,1,1,1,2,1,1,1,2,2,1,2,1};
-        int[] bestRuleMissingTeardropAndIpSweep = new int[]{43302,3,8,1,23,589,0,3,2,0,1,100,86,0,0,0,100,100,1,1,1,1,1,2,2,1,1,2,1,2,1,1};
         ArrayList<int[]> bestRules= new ArrayList<>();
-        bestRules.add(bestDosNoNeptune);
-        bestRules.add(bestNoFilter);
-        bestRules.add(bestNoDos);
-        bestRules.add(bestRuleMissingNeptunes);
-        bestRules.add(bestRuleMissingTeardropAndIpSweep);
-        int[] bestRuleMissingPortsweep = new int[]{56520,1,12,8,253,1545,0,1,2,0,71,0,96,0,0,0,100,90,1,1,1,1,1,2,1,2,1,2,2,2,1,1};
-        bestRules.add(bestRuleMissingPortsweep);
-        int[] bestRuleMoreMissingPortsweep = new int[]{37345,1,11,8,248,1481,0,3,2,58,52,32,14,53,61,91,15,54,1,1,1,1,1,1,1,1,1,2,2,2,1,1};
-        bestRules.add(bestRuleMoreMissingPortsweep);
-        int[] bestRuleMissingBack = new int[]{37517,1,1,1,942,7598,0,1,1,53,57,73,52,85,0,20,99,100,1,2,2,1,1,1,1,1,1,1,2,2,1,1};
-        bestRules.add(bestRuleMissingBack);
-        int[] bestRuleMissingMoreNeptuneAndSatan = new int[]{54881,1,11,5,884,7806,0,3,0,0,31,1,8,100,71,100,100,72,1,1,1,1,2,2,1,2,2,1,1,1,1,1};
-        bestRules.add(bestRuleMissingMoreNeptuneAndSatan);
-        int[] bestRuleMissingWarezclient = new int[]{6055,1,14,1,246,8434,0,1,2,2,2,97,57,95,24,12,100,0,1,2,1,1,1,1,1,1,1,1,1,2,1,2}; //AGGIUNGE FALSI POSITIVI
-        bestRules.add(bestRuleMissingWarezclient);
-        int[] bestRuleMissingSatan = new int[]{6172,2,12,1,416,92,0,0,0,2,0,44,55,0,54,0,93,70,1,1,1,2,2,2,2,1,1,1,1,2,1,1}; //AGGIUNGE FALSI POSITIVI
-        bestRules.add(bestRuleMissingSatan);
-        int[] bestRuleMissingNmap = new int[]{43303,5808,0,0,0,920,24,6,0,17,43,2,11,1,1,1,1,2,1,1,1,2,1,1,2}; //Probe features/ poco utile
-        int[] bestRuleMoreMoreMissingPortsweep = new int[]{49018,24,0,0,1,232,12,1,81,93,63,73,8,1,1,2,2,1,1,1,1,1,1,2,2}; //Probe features
-        bestRules.add(bestRuleMoreMoreMissingPortsweep);
-        int[] bestRuleMoreProbe = new int[]{0,1303,1,2,0,840,14,5,2,0,26,23,3,1,1,1,1,1,1,1,1,1,2,2,2}; //Probe features
-        bestRules.add(bestRuleMoreProbe);
-        int[] bestRuleMoreMoreProbe = new int[]{13,125,1,0,0,0,0,0,0,0,98,255,1,1,1,1,2,1,1,1,1,1,2,1,1}; //Probe features, aggiunge molti FP/
-        int[] bestRuleMorePortsweep = new int[]{44943,247,0,0,0,58,22,7,42,98,1,48,9,1,1,1,1,1,1,1,1,1,1,2,2}; //Probe features
-        bestRules.add(bestRuleMorePortsweep);
-        int[] bestRuleMoreNeptune = new int[]{15464,1,6,5,457,9114,0,0,0,0,37,33,13,72,76,0,83,56,1,1,1,2,2,2,1,2,2,1,1,2,1,1}; //Probe features
-        bestRules.add(bestRuleMoreNeptune);
-        int[] bestRuleMoreU2r = new int[]{14,6,7188,0,0,2,187,23,7,100,3,1,1,1,2,1,1,1,1,1,1,1}; //U2R features
-        bestRules.add(bestRuleMoreU2r);
-        int[] bestRuleMoreWarezclient = new int[]{15203,350,1184,0,0,0,56,21,7,100,0,1,2,2,2,1,2,1,1,1,1,1}; //U2R features
-        bestRules.add(bestRuleMoreWarezclient);
+        int[] bestRuleDos1= new int[]{44599, 2, 12, 1, 101, 2233, 0, 3, 0, 0, 1, 100, 11, 58, 29, 1, 92, 99, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1};
+        int[] bestRuleDos2= new int[]{8169, 1, 12, 5, 411, 6640, 0, 2, 0, 1, 0, 1, 53, 100, 38, 100, 100, 100, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1};
+        int[] bestRuleDos3= new int[]{36280, 1, 6, 5, 265, 7538, 0, 3, 0, 0, 78, 22, 2, 68, 38, 100, 83, 78, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1};
+        int[] bestRuleDos4= new int[]{42790, 1, 12, 3, 428, 3993, 0, 0, 0, 0, 83, 36, 26, 10, 11, 0, 100, 77, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1};
+        int[] bestRuleDos5= new int[]{50839, 1, 11, 3, 245, 1966, 0, 1, 1, 83, 25, 79, 70, 25, 69, 0, 100, 67, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1};
+        int[] bestRuleDos6= new int[]{41847, 1, 15, 3, 177, 885, 0, 3, 0, 5, 75, 64, 18, 48, 45, 71, 83, 30, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1};
+        int[] bestRuleDos7= new int[]{26236, 1, 1, 5, 497, 6935, 0, 0, 2, 2, 84, 65, 1, 100, 59, 0, 100, 78, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 1, 1};
+        int[] bestRuleDos8= new int[]{37018, 1, 3, 5, 748, 6703, 0, 2, 1, 2, 90, 27, 52, 69, 86, 100, 84, 73, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1};
+        int[] bestRuleDos9= new int[]{10230, 1, 11, 5, 702, 6262, 0, 2, 0, 2, 28, 100, 21, 100, 78, 31, 100, 100, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1};
+        int[] bestRuleDos10= new int[]{327, 1, 1, 1, 795, 6569, 0, 3, 0, 26, 51, 83, 96, 93, 89, 66, 84, 100, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1};
+        int[] bestRuleDos11= new int[]{38945, 1, 14, 5, 778, 8217, 0, 1, 1, 0, 0, 4, 8, 46, 24, 100, 84, 100, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1};
+        int[] bestRuleProbe1= new int[]{18216, 2, 0, 2, 0, 789, 4, 7, 0, 82, 94, 255, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2};
+        int[] bestRuleProbe2= new int[]{21414, 4637, 0, 0, 2, 21, 12, 6, 100, 100, 74, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2};
+        int[] bestRuleProbe3= new int[]{29100, 15, 1, 0, 0, 1, 25, 0, 0, 0, 13, 18, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1};
+        int[] bestRuleProbe4= new int[]{43096, 8352, 0, 0, 0, 578, 27, 6, 100, 57, 0, 0, 8, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2};
+        int[] bestRuleU2r1= new int[]{42702, 6, 7291, 1, 0, 2, 714, 2, 6, 57, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        int[] bestRuleU2r2= new int[]{25584, 334, 9141, 0, 0, 2, 788, 26, 0, 1, 0, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1};
+        bestRules.add(bestRuleDos1);
+        bestRules.add(bestRuleDos2);
+        bestRules.add(bestRuleDos3);
+        bestRules.add(bestRuleDos4);
+        bestRules.add(bestRuleDos5);
+        bestRules.add(bestRuleDos6);
+        bestRules.add(bestRuleDos7);
+        bestRules.add(bestRuleDos8);
+        bestRules.add(bestRuleDos9);
+        bestRules.add(bestRuleDos10);
+        bestRules.add(bestRuleDos11);
+        bestRules.add(bestRuleProbe1);
+        bestRules.add(bestRuleProbe2);
+        bestRules.add(bestRuleProbe3);
+        bestRules.add(bestRuleProbe4);
+        bestRules.add(bestRuleU2r1);
+        bestRules.add(bestRuleU2r2);
+
+        System.out.println("//// TRAINING /////");
         ArrayList<Double> results= performanceRuleSet(bestRules, (ArrayList<Connection>) l);
         System.out.println("Attacchi trovati: "+mapFound.toString());
         HashMap<String, Integer> mapMissingAttacks = findMissingAttacks(mapAttacks, mapFound);
@@ -541,5 +553,181 @@ public class Verifier {
         System.out.println("Numero attacchi mancanti: "+missingAttacksList.size());
         plotStatistics(bestRules, (ArrayList<Connection>) l);
         plotConfusionMatrixCSV(bestRules, (ArrayList<Connection>) l);
+
+//VALIDATION
+
+
+        System.out.println("//// VALIDATION /////");
+        mapAttacks.clear();
+        mapFound.clear();
+        System.out.println(lValidation.size());
+        A=B=0.0;
+        n=0;
+        for(Connection c: lValidation){
+            String label= c.getLabel();
+            if(label.equalsIgnoreCase("normal"))
+                B++;
+            else {A++;
+                n=0;
+                if(mapAttacks.containsKey(label)){
+                    n=mapAttacks.get(label);
+                }
+                mapAttacks.put(label, n+1);
+            }
+        }
+        ArrayList<Double> resultsValidation= performanceRuleSet(bestRules, (ArrayList<Connection>) lValidation);
+        System.out.println("Attacchi trovati: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksValidation = findMissingAttacks(mapAttacks, mapFound);
+        System.out.println("Attacchi mancanti: "+mapMissingAttacksValidation.toString());
+         TP= resultsValidation.get(0);
+         TN= resultsValidation.get(1);
+         FP= resultsValidation.get(2);
+         FN= resultsValidation.get(3);
+         fmeasure= (TP)/(TP+(FP+FN)/2);
+         accuracy= ((TP+TN)/(TP+TN+FP+FN));
+         detectionRate= (TP)/(FN+TP);
+         falseAlarms= (FP)/(TN+FP);
+         precision = (TP)/(TP+FP);
+         specificity=TN/(TN+FP);
+         MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
+        HashMap<String, Double> attacksPercentageValidation= findAttackPercentages(mapAttacks, mapFound);
+        System.out.println("Percentuali tipi di attacchi trovati:\n"+attacksPercentageValidation.toString());
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        ArrayList<Connection> missingAttacksListValidation= (ArrayList<Connection>) missingOnlyAttacksList(lValidation, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksListValidation.size());
+
+        //Probe
+        ArrayList<Connection> lProbeValidation=filterProbe((ArrayList<Connection>) lValidation);
+        resultsValidation= performanceRuleSet(bestRules, lProbeValidation);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati Probe: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksProbeValidation = findMissingAttacks(findAttacks(lProbeValidation), mapFound);
+        System.out.println("Attacchi mancanti Probe: "+mapMissingAttacksProbeValidation.toString());
+        TP= resultsValidation.get(0);
+        TN= resultsValidation.get(1);
+        FP= resultsValidation.get(2);
+        FN= resultsValidation.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi Probe:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksListValidation= (ArrayList<Connection>) missingOnlyAttacksList(lProbeValidation, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksListValidation.size());
+
+        //Dos
+        ArrayList<Connection> lDosValidation=filterDos((ArrayList<Connection>) lValidation);
+        resultsValidation= performanceRuleSet(bestRules, lDosValidation);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati Dos: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksDosValidation = findMissingAttacks(findAttacks(lDosValidation), mapFound);
+        System.out.println("Attacchi mancanti Dos: "+mapMissingAttacksDosValidation.toString());
+        TP= resultsValidation.get(0);
+        TN= resultsValidation.get(1);
+        FP= resultsValidation.get(2);
+        FN= resultsValidation.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi Dos:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksListValidation= (ArrayList<Connection>) missingOnlyAttacksList(lDosValidation, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksListValidation.size());
+
+        //U2R
+        ArrayList<Connection> lU2rValidation=filterU2r((ArrayList<Connection>) lValidation);
+        resultsValidation= performanceRuleSet(bestRules, lU2rValidation);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati U2r: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksU2rValidation = findMissingAttacks(findAttacks(lU2rValidation), mapFound);
+        System.out.println("Attacchi mancanti U2r: "+mapMissingAttacksU2rValidation.toString());
+        TP= resultsValidation.get(0);
+        TN= resultsValidation.get(1);
+        FP= resultsValidation.get(2);
+        FN= resultsValidation.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi U2r:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksListValidation= (ArrayList<Connection>) missingOnlyAttacksList(lU2rValidation, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksListValidation.size());
+
+        //R2L
+        ArrayList<Connection> lR2lValidation=filterR2l((ArrayList<Connection>) lValidation);
+        resultsValidation= performanceRuleSet(bestRules, lR2lValidation);
+        System.out.println("////////////");
+        System.out.println("Attacchi trovati R2l: "+mapFound.toString());
+        HashMap<String, Integer> mapMissingAttacksR2lValidation = findMissingAttacks(findAttacks(lR2lValidation), mapFound);
+        System.out.println("Attacchi mancanti R2l: "+mapMissingAttacksR2lValidation.toString());
+        TP= resultsValidation.get(0);
+        TN= resultsValidation.get(1);
+        FP= resultsValidation.get(2);
+        FN= resultsValidation.get(3);
+        fmeasure= (TP)/(TP+(FP+FN)/2);
+        accuracy= ((TP+TN)/(TP+TN+FP+FN));
+        detectionRate= (TP)/(FN+TP);
+        falseAlarms= (FP)/(TN+FP);
+        precision = (TP)/(TP+FP);
+        specificity=TN/(TN+FP);
+        MCC= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+        System.out.println("Risultati relativi ad attacchi R2l:");
+        System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
+        System.out.println("Accuracy: "+accuracy);
+        System.out.println("Detection Rate/Recall: "+detectionRate);
+        System.out.println("False Alarms: "+falseAlarms);
+        System.out.println("Precision: "+precision);
+        System.out.println("Specificity: "+specificity);
+        System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
+        System.out.println("Numero di regole concatenate: "+bestRules.size());
+        missingAttacksListValidation= (ArrayList<Connection>) missingOnlyAttacksList(lR2lValidation, bestRules);
+        System.out.println("Numero attacchi mancanti: "+missingAttacksListValidation.size());
+        plotStatistics(bestRules, (ArrayList<Connection>) lValidation);
+        plotConfusionMatrixCSV(bestRules, (ArrayList<Connection>) lValidation);
     }
 }

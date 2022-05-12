@@ -69,7 +69,7 @@ public class Verifier10p {
 
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-//        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.csv"));
+//        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.labeled.csv"));
         System.out.println(l.size());
         A=B=0.0;
         int n=0;
@@ -88,6 +88,7 @@ public class Verifier10p {
         System.out.println("Number of attacks in dataset: "+A+"\nNumber of normal connections: "+B);
         System.out.println("Attacchi totali in dataset: "+mapAttacks.toString());
         ArrayList<int[]> bestRules= new ArrayList<>();
+        //popolazione 5000, generazioni 1000
         int[] bestRuleDos1= new int[]{34381, 1, 12, 5, 984, 3538, 0, 1, 1, 0, 40, 0, 15, 100, 89, 100, 100, 87, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1};
         int[] bestRuleDos2= new int[]{5855, 3, 10, 1, 462, 8249, 0, 2, 0, 1, 1, 81, 27, 88, 31, 100, 90, 100, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1};
         int[] bestRuleDos3= new int[]{33825, 1, 12, 3, 103, 3745, 0, 1, 2, 1, 1, 67, 68, 18, 60, 0, 100, 0, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 1, 1};

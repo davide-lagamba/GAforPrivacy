@@ -243,12 +243,14 @@ public class RandomClassifier {
         Double precision=0.0;
         Double specificity=0.0;
         Double MCC=0.0;
+        Double fmeasure=0.0;
         Double tmpaccuracy=0.0;
         Double tmpdetectionRate=0.0;
         Double tmpfalseAlarms=0.0;
         Double tmpprecision=0.0;
         Double tmpspecificity=0.0;
         Double tmpMCC=0.0;
+        Double tmpfmeasure=0.0;
         Double TP=0.0;
         Double TN=0.0;
         Double FP=0.0;
@@ -266,7 +268,8 @@ public class RandomClassifier {
            tmpfalseAlarms+= (FP)/(TN+FP);
            tmpprecision += (TP)/(TP+FP);
            tmpspecificity+=TN/(TN+FP);
-           tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+           tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+           tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -274,6 +277,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("Risultati relativi ad attacchi specifici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy);
@@ -282,7 +286,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
-
+        System.out.println("F-Measure: "+fmeasure);
 
         tmpaccuracy=0.0;
         tmpdetectionRate=0.0;
@@ -290,6 +294,7 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         for(int i=0; i<rep; i++){
             results= randomClassifyGenericsAttacks(l);
             TP= results.get(0);
@@ -301,7 +306,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -309,6 +315,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -318,6 +325,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
         tmpaccuracy=0.0;
         tmpdetectionRate=0.0;
@@ -325,6 +333,7 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         ArrayList<ArrayList<Connection>> lTrainValidation;
         ArrayList<Double> percentages;
         for(int i=0; i<rep; i++){
@@ -341,7 +350,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -349,6 +359,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi specifici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -358,6 +369,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
         tmpaccuracy=0.0;
         tmpdetectionRate=0.0;
@@ -365,11 +377,12 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         for(int i=0; i<rep; i++){
             lTrainValidation = createTrainingAndValidationSets(l);
             percentages = findPercentages(lTrainValidation.get(0));
 //            System.out.println("Percentuali\nnormal: "+percentages.get(0)+"\nprobe: "+percentages.get(1)+"\ndos: "+percentages.get(2)+"\nu2r: "+percentages.get(3)+"\nr2l: "+percentages.get(4));
-            results= randomClassifySpecificWeightedAttacks(lTrainValidation.get(1), percentages);
+            results= randomClassifyGenericsWeightedAttacks(lTrainValidation.get(1), percentages);
             TP= results.get(0);
             TN= results.get(1);
             FP= results.get(2);
@@ -379,7 +392,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -387,6 +401,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -396,6 +411,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
 
         System.out.println("//// 100% /////");
@@ -406,6 +422,7 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         for(int i=0; i<rep; i++){
             results100p= randomClassifySpecificAttacks(l100p);
             TP= results100p.get(0);
@@ -417,7 +434,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -425,6 +443,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("Risultati relativi ad attacchi specifici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
         System.out.println("Accuracy: "+accuracy);
@@ -433,6 +452,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
 
         tmpaccuracy=0.0;
@@ -441,6 +461,7 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         for(int i=0; i<rep; i++){
             results100p= randomClassifyGenericsAttacks(l100p);
             TP= results100p.get(0);
@@ -452,7 +473,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -460,6 +482,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -469,6 +492,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
         tmpaccuracy=0.0;
         tmpdetectionRate=0.0;
@@ -476,6 +500,7 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         ArrayList<Double> percentages100p;
         for(int i=0; i<rep; i++){
             lTrainValidation = createTrainingAndValidationSets(l100p);
@@ -491,7 +516,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -499,6 +525,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi specifici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -508,6 +535,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
         tmpaccuracy=0.0;
         tmpdetectionRate=0.0;
@@ -515,11 +543,12 @@ public class RandomClassifier {
         tmpprecision=0.0;
         tmpspecificity=0.0;
         tmpMCC=0.0;
+        tmpfmeasure=0.0;
         for(int i=0; i<rep; i++){
             lTrainValidation = createTrainingAndValidationSets(l100p);
             percentages100p = findPercentages(lTrainValidation.get(0));
 //            System.out.println("Percentuali\nnormal: "+percentages100p.get(0)+"\nprobe: "+percentages100p.get(1)+"\ndos: "+percentages100p.get(2)+"\nu2r: "+percentages100p.get(3)+"\nr2l: "+percentages100p.get(4));
-            results100p= randomClassifySpecificWeightedAttacks(lTrainValidation.get(1), percentages100p);
+            results100p= randomClassifyGenericsWeightedAttacks(lTrainValidation.get(1), percentages100p);
             TP= results100p.get(0);
             TN= results100p.get(1);
             FP= results100p.get(2);
@@ -529,7 +558,8 @@ public class RandomClassifier {
             tmpfalseAlarms+= (FP)/(TN+FP);
             tmpprecision += (TP)/(TP+FP);
             tmpspecificity+=TN/(TN+FP);
-            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));}
+            tmpMCC+= ((TP*TN)-(FP*FN))/Math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN));
+            tmpfmeasure+= (TP)/(TP+(FP+FN)/2);}
 
         accuracy=tmpaccuracy/rep;
         detectionRate=tmpdetectionRate/rep;
@@ -537,6 +567,7 @@ public class RandomClassifier {
         precision=tmpprecision/rep;
         specificity=tmpspecificity/rep;
         MCC=tmpMCC/rep;
+        fmeasure=tmpfmeasure/rep;
         System.out.println("///////////");
         System.out.println("Risultati relativi ad attacchi generici pesati classificati casualmente:");
         System.out.println("TP: "+TP+", TN: "+TN+", FP: "+FP+", FN: "+FN);
@@ -546,6 +577,7 @@ public class RandomClassifier {
         System.out.println("Precision: "+precision);
         System.out.println("Specificity: "+specificity);
         System.out.println("MCC: "+MCC);
+        System.out.println("F-Measure: "+fmeasure);
 
 
     }

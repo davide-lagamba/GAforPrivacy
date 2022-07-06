@@ -1374,8 +1374,8 @@ public class RunnerConfig100p {
         System.out.println("False Alarms: "+falseAlarms+"%");
     }
     public static void main(String[] args) throws IOException {
-        l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-//        createTrainingAndValidationSetsNoSave();
+        l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv")); //insieme di training
+        //link dei dataset disponibile nel file README
         A=B=0.0;
         mapAttacks.clear();
         int n=0;
@@ -1397,13 +1397,13 @@ public class RunnerConfig100p {
         System.out.println(l.size());
 
         System.out.println(l.get(0));
-for(int i=1; i<=10; i++){
-    runProbe(1000,1000, i);}
-
-for(int i=11; i<=14; i++){
+for(int i=1; i<=11; i++){ //sono state provate diverse configurazioni, quella riportata è quella scelta in definitiva
     run(1000,1000, i);}
 
-for(int i=15; i<=17; i++){
+for(int i=12; i<=15; i++){
+    runProbe(1000,1000, i);}
+
+for(int i=16; i<=17; i++){
     runU2r(1000,1000, i);}
 printStatisticsTraining();
 for(int[] e: bestRules)

@@ -1427,7 +1427,7 @@ public class RunnerConfig10p {
         System.out.println("False Alarms: "+falseAlarms+"%");
     }
     public static void main(String[] args) throws IOException {
-        l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
+        l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv")); //link dei dataset disponibile nel file README
         createTrainingAndValidationSetsNoSave();
         A=B=0.0;
         mapAttacks.clear();

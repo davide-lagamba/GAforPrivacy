@@ -69,7 +69,8 @@ public class Verifier10p {
 
     public static void main(String[] args) throws IOException {
         l=DatasetLoader.parse(new File("src/main/resources/kddcup99_csv.csv"));
-//        l=DatasetLoader.parse(new File("src/main/resources/kddcup.data.corrected.labeled.csv"));
+        //i risultati ottenuti da questo Verifier non prendono in considerazione la suddivisione casuale dei dataset ottenuta in fase di creazione delle regole
+        //pertanto, i risultati della fase di Validazione sono quelli ottenuti dal RunnerConfig10p
         System.out.println(l.size());
         A=B=0.0;
         int n=0;
